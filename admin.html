@@ -11,6 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Supabase CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- LiveWedding Cloud Client -->
+    <script src="supabase-client.js"></script>
+
     <style>
         :root {
             --bg-darker: #050505;
@@ -1061,29 +1066,32 @@
         }
 
         // --- BOOKINGS CRUD LOGIC ---
-        function renderBookingsTable() {
+        async function renderBookingsTable() {
             const tableBody = document.getElementById('bookings-table-body');
             if (!tableBody) return;
 
-            let bookings = JSON.parse(localStorage.getItem('livewedding_bookings'));
-            if (!bookings) {
-                // Initialize default demo bookings
-                bookings = [
-                    { id: Date.now() + 1, name: "Rohit Sharma", email: "rohit@example.com", date: "2026-01-15", package: "Platinum", status: "pending" },
-                    { id: Date.now() + 2, name: "Sneha Patil", email: "sneha@example.com", date: "2026-02-02", package: "Gold", status: "confirmed" }
-                ];
-                localStorage.setItem('livewedding_bookings', JSON.stringify(bookings));
-            }
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--gold-primary);">Loading live cloud data...</td></tr>';
+
+            let bookings = await cloudGetBookings();
 
             tableBody.innerHTML = '';
+
+            if (bookings.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary);">No active bookings in CRM database.</td></tr>';
+                return;
+            }
+
             bookings.forEach((booking) => {
                 const row = document.createElement('tr');
 
                 let actionHTML = '';
+                // Check if old ID or UUID format for string passing
+                const idArg = typeof booking.id === 'string' ? `'${booking.id}'` : booking.id;
+
                 if (booking.status === 'pending') {
                     actionHTML = `
-                        <button class="ai-btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateBookingStatus(${booking.id}, 'confirmed')">Accept</button>
-                        <button class="ai-btn" style="padding: 5px 10px; font-size: 0.8rem; background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border-color: #ff4d4d;" onclick="updateBookingStatus(${booking.id}, 'rejected')">Reject</button>
+                        <button class="ai-btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateBookingStatus(${idArg}, 'confirmed')">Accept</button>
+                        <button class="ai-btn" style="padding: 5px 10px; font-size: 0.8rem; background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border-color: #ff4d4d;" onclick="updateBookingStatus(${idArg}, 'rejected')">Reject</button>
                     `;
                 } else if (booking.status === 'confirmed') {
                     actionHTML = `<span class="status completed">Confirmed Event</span>`;
@@ -1102,38 +1110,31 @@
             });
         }
 
-        function createManualBooking(e) {
+        async function createManualBooking(e) {
             e.preventDefault();
             const name = document.getElementById('manual-book-name').value;
             const date = document.getElementById('manual-book-date').value;
 
-            let bookings = JSON.parse(localStorage.getItem('livewedding_bookings')) || [];
+            // Submit direct to Supabase but immediately as 'confirmed'
+            const { data, error } = await supabase
+                .from('bookings')
+                .insert([{ name: name, email: "Manual Entry", date: date, package: "Custom Admin Entry", status: 'confirmed' }]);
 
-            bookings.push({
-                id: Date.now(),
-                name: name,
-                email: "Manual Entry",
-                date: date,
-                package: "Custom",
-                status: "confirmed"
-            });
-
-            localStorage.setItem('livewedding_bookings', JSON.stringify(bookings));
+            if (error) {
+                alert("Error connecting to live CRM. See console.");
+                console.error(error);
+                return;
+            }
 
             document.getElementById('new-booking-form').reset();
             document.getElementById('new-booking-form-container').style.display = 'none';
-            renderBookingsTable();
-            alert('Event booked successfully! This date is now blocked on the frontend.');
+            await renderBookingsTable();
+            alert('Event booked successfully! This date is now blocked on the live frontend.');
         }
 
-        function updateBookingStatus(id, newStatus) {
-            let bookings = JSON.parse(localStorage.getItem('livewedding_bookings'));
-            const index = bookings.findIndex(b => b.id === id);
-            if (index !== -1) {
-                bookings[index].status = newStatus;
-                localStorage.setItem('livewedding_bookings', JSON.stringify(bookings));
-                renderBookingsTable();
-            }
+        async function updateBookingStatus(id, newStatus) {
+            await cloudUpdateBookingStatus(id, newStatus);
+            await renderBookingsTable();
         }
     </script>
 </body>

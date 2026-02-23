@@ -20,6 +20,11 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- LiveWedding Cloud Client -->
+    <script src="supabase-client.js"></script>
 </head>
 
 <body>
@@ -220,35 +225,27 @@
             }
         });
 
-        function submitQuickConsultation(e) {
+        async function submitQuickConsultation(e) {
             e.preventDefault();
             const name = document.getElementById('quick-name').value;
             const email = document.getElementById('quick-email').value;
             const date = document.getElementById('quick-date').value;
 
-            let bookings = JSON.parse(localStorage.getItem('livewedding_bookings')) || [];
-
-            // Check availability
-            const isBooked = bookings.some(b => b.date === date && b.status === 'confirmed');
+            // Check availability from Cloud DB
+            const isBooked = await cloudCheckDateBooked(date);
             if (isBooked) {
                 alert("Sorry, this date is already booked! Please select another date.");
                 document.getElementById('quick-date').value = '';
                 return;
             }
 
-            bookings.push({
-                id: Date.now(),
-                name: name,
-                email: email,
-                date: date,
-                package: "To Discuss (Quick Consult)",
-                status: "pending"
-            });
+            // Push to Cloud DB
+            const success = await cloudSubmitBooking(name, email, date, "To Discuss (Quick Consult)");
 
-            localStorage.setItem('livewedding_bookings', JSON.stringify(bookings));
-
-            alert('Quick Consultation Submitted! Our studio manager will reach out soon. Check admin CRM.');
-            document.getElementById('quick-consult-form').reset();
+            if (success) {
+                alert('Quick Consultation Submitted! Our studio manager will reach out soon. Check Admin CRM.');
+                document.getElementById('quick-consult-form').reset();
+            }
         }
     </script>
 </body>

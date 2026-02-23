@@ -15,6 +15,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 
+    <!-- Supabase CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- LiveWedding Cloud Client -->
+    <script src="supabase-client.js"></script>
+
     <style>
         .page-header {
             height: 40vh;
@@ -482,12 +487,11 @@
 
             // Note: Native HTML <input type="date"> doesn't easily support disabling *specific* random dates consistently across all browsers via attributes. 
             // So we'll validate on change/submit.
-            dateInput.addEventListener('change', (e) => {
+            dateInput.addEventListener('change', async (e) => {
                 const selectedDate = e.target.value;
-                const bookings = JSON.parse(localStorage.getItem('livewedding_bookings')) || [];
 
-                // Find if date is confirmed
-                const isBooked = bookings.some(b => b.date === selectedDate && b.status === 'confirmed');
+                // Find if date is confirmed in Cloud DB
+                const isBooked = await cloudCheckDateBooked(selectedDate);
 
                 if (isBooked) {
                     alert("Sorry, this date is already booked! Please select another date.");
@@ -496,36 +500,28 @@
             });
         }
 
-        function submitBooking(e) {
+        async function submitBooking(e) {
             e.preventDefault();
 
             const name = document.getElementById('book-name').value;
             const email = document.getElementById('book-email').value;
             const date = document.getElementById('book-date').value;
 
-            let bookings = JSON.parse(localStorage.getItem('livewedding_bookings')) || [];
-
             // Double check availability
-            const isBooked = bookings.some(b => b.date === date && b.status === 'confirmed');
+            const isBooked = await cloudCheckDateBooked(date);
             if (isBooked) {
                 alert("Sorry, this date is already booked! Please select another date.");
                 return;
             }
 
-            bookings.push({
-                id: Date.now(),
-                name: name,
-                email: email,
-                date: date,
-                package: currentPackageName,
-                status: "pending"
-            });
+            // Sync to Live Cloud CRM
+            const success = await cloudSubmitBooking(name, email, date, currentPackageName);
 
-            localStorage.setItem('livewedding_bookings', JSON.stringify(bookings));
-
-            alert('Booking Inquiry Submitted Successfully! Your data has been sent to the Admin Dashboard CRM.');
-            document.getElementById('bookingForm').reset();
-            updateSummary();
+            if (success) {
+                alert('Booking Inquiry Submitted Successfully! Your data has been synced to the connected Supabase cloud.');
+                document.getElementById('bookingForm').reset();
+                updateSummary();
+            }
         }
     </script>
 </body>
