@@ -262,7 +262,6 @@
         <a href="#" class="nav-link" data-target="ai-edit"><i class="fas fa-magic"></i> AI Auto-Edit</a>
         <a href="#" class="nav-link" data-target="clients"><i class="fas fa-users"></i> Client Access</a>
         <a href="#" class="nav-link" data-target="staff"><i class="fas fa-user-shield"></i> Staff Management</a>
-        <a href="#" class="nav-link" data-target="analytics"><i class="fas fa-chart-line"></i> Analytics</a>
         <a href="#" class="nav-link" style="margin-top: auto; color: #ff4d4d;" id="admin-logout"><i
                 class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
@@ -341,26 +340,6 @@
             </div>
         </div>
 
-        <div id="view-analytics" class="spa-view" style="display: none;">
-            <!-- Graphical Analytics Representation -->
-            <div class="ai-panel" style="padding: 20px;">
-                <div class="panel-title" style="display: flex; justify-content: space-between;">
-                    <div><i class="fas fa-chart-bar" style="color: var(--gold-primary);"></i> Revenue & Booking
-                        Analytics</div>
-                    <div>
-                        <button class="ai-btn" style="padding: 5px 15px; font-size: 0.8rem;"
-                            id="btn-monthly">Monthly</button>
-                        <button class="ai-btn"
-                            style="padding: 5px 15px; font-size: 0.8rem; background: var(--bg-card); border-color: var(--border); color: var(--text-secondary);"
-                            id="btn-yearly">Yearly</button>
-                    </div>
-                </div>
-                <div style="height: 400px; width: 100%;">
-                    <canvas id="analyticsChart"></canvas>
-                </div>
-            </div>
-        </div>
-
         <div id="view-ai-edit" class="spa-view" style="display: none;">
             <div class="ai-panel">
                 <div class="panel-title"><i class="fas fa-brain" style="color: var(--gold-primary);"></i> AI Workflow
@@ -374,7 +353,20 @@
                     style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border-top: 1px solid var(--border); padding-top: 30px;">
                     <!-- Auto-Edit Simulation -->
                     <div>
-                        <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Live Auto-Edit Simulator</h3>
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h3 style="font-size: 1.2rem; margin: 0;">Live Auto-Edit Simulator</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="ai-btn" style="padding: 5px 10px; font-size: 0.8rem;"
+                                    onclick="document.getElementById('ai-custom-upload').click()"><i
+                                        class="fas fa-upload"></i> Upload</button>
+                                <input type="file" id="ai-custom-upload" accept="image/*" style="display:none;"
+                                    onchange="loadCustomAIImage(event)">
+                                <button class="ai-btn"
+                                    style="padding: 5px 10px; font-size: 0.8rem; background: transparent; color: var(--gold-primary); border-color: var(--gold-primary);"
+                                    onclick="downloadAIImage()"><i class="fas fa-download"></i> Save</button>
+                            </div>
+                        </div>
                         <div style="background: var(--bg-darker); border: 1px dashed var(--gold-primary); height: 250px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 4px;"
                             id="editor-canvas-container">
                             <img id="editor-img"
@@ -437,6 +429,20 @@
                                 style="width: 100%; background: transparent; border: 1px solid var(--border); padding: 10px; color: white; border-radius: 4px;">
                         </div>
                     </div>
+                    <div style="margin-top: 20px;">
+                        <label
+                            style="display:block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">AI
+                            Batch Preset (Optional)</label>
+                        <select id="upload-ai-preset"
+                            style="width: 100%; background: transparent; border: 1px solid var(--border); padding: 10px; color: white; border-radius: 4px;">
+                            <option value="none">None (True RAW)</option>
+                            <option value="cinematic">Cinematic Kerala (Vibrant & Warm)</option>
+                            <option value="vintage">Vintage Film (Classic Grain)</option>
+                            <option value="bnw">High-Contrast B&W (Timeless Monochrome)</option>
+                        </select>
+                        <p style="font-size: 0.75rem; color: var(--gold-primary); margin-top: 5px;">* Selected preset
+                            will be applied to all files in this batch.</p>
+                    </div>
                 </div>
 
                 <div style="border: 2px dashed var(--border); padding: 50px; text-align: center; border-radius: 8px; margin-bottom: 20px;"
@@ -474,6 +480,7 @@
                             <th>File Name</th>
                             <th>Size</th>
                             <th>Upload Date</th>
+                            <th>Preset</th>
                             <th>Status/Info</th>
                             <th>Action</th>
                         </tr>
@@ -666,9 +673,7 @@
 
     <!-- Auth & External Libraries -->
     <script src="auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        let analyticsChartInstance = null;
 
         document.addEventListener('DOMContentLoaded', function () {
             // --- SPA NAVIGATION LOGIC ---
@@ -692,7 +697,6 @@
                     // Update header title based on view
                     const viewTitles = {
                         'dashboard': 'Welcome back, ' + localStorage.getItem('admin_logged_in_user'),
-                        'analytics': 'Revenue Analytics',
                         'ai-edit': 'AI Workflow Engine',
                         'gallery': 'Gallery Upload Manager',
                         'clients': 'Client Access Manager',
@@ -700,11 +704,6 @@
                         'bookings': 'CRM & Bookings'
                     };
                     headerTitle.innerText = viewTitles[targetId];
-
-                    // Render chart dynamically only when analytics tab is opened if not initialized
-                    if (targetId === 'analytics' && !analyticsChartInstance) {
-                        initChart();
-                    }
 
                     // Load client data if client view
                     if (targetId === 'clients') {
@@ -734,113 +733,65 @@
             // Initialize Dashboard View
             document.getElementById('view-dashboard').style.display = 'block';
 
-            // --- CHART LOGIC ---
-            function initChart() {
-                const ctx = document.getElementById('analyticsChart');
-                if (ctx) {
-                    analyticsChartInstance = new Chart(ctx, {
-                        type: 'line',
-                        data: getChartData('monthly'),
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { labels: { color: '#a0a0a0' } }
-                            },
-                            scales: {
-                                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a0a0a0' } },
-                                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a0a0a0' } }
-                            }
-                        }
-                    });
-                }
-            }
-
-            function getChartData(period) {
-                if (period === 'monthly') {
-                    return {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-                        datasets: [
-                            {
-                                label: 'Revenue (Lakhs ₹)',
-                                data: [15, 19, 25, 22, 30, 28, 35, 32, 40, 42],
-                                borderColor: '#d4af37', backgroundColor: 'rgba(212, 175, 55, 0.1)', borderWidth: 3, fill: true, tension: 0.4
-                            },
-                            {
-                                label: 'Bookings',
-                                data: [4, 5, 8, 6, 9, 8, 12, 10, 14, 12],
-                                borderColor: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4
-                            }
-                        ]
-                    };
-                } else { // Yearly
-                    return {
-                        labels: ['2020', '2021', '2022', '2023', '2024'],
-                        datasets: [
-                            {
-                                label: 'Revenue (Lakhs ₹)',
-                                data: [120, 180, 250, 310, 420],
-                                borderColor: '#d4af37', backgroundColor: 'rgba(212, 175, 55, 0.1)', borderWidth: 3, fill: true, tension: 0.4
-                            },
-                            {
-                                label: 'Bookings',
-                                data: [45, 60, 95, 110, 140],
-                                borderColor: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4
-                            }
-                        ]
-                    };
-                }
-            }
-
-            // Chart Toggle Event Listeners
-            document.getElementById('btn-monthly')?.addEventListener('click', (e) => {
-                e.target.style.background = 'rgba(212, 175, 55, 0.1)';
-                e.target.style.borderColor = 'var(--gold-primary)';
-                e.target.style.color = 'var(--gold-primary)';
-                document.getElementById('btn-yearly').style.background = 'var(--bg-card)';
-                document.getElementById('btn-yearly').style.borderColor = 'var(--border)';
-                document.getElementById('btn-yearly').style.color = 'var(--text-secondary)';
-
-                if (analyticsChartInstance) {
-                    analyticsChartInstance.data = getChartData('monthly');
-                    analyticsChartInstance.update();
-                }
-            });
-
-            document.getElementById('btn-yearly')?.addEventListener('click', (e) => {
-                e.target.style.background = 'rgba(212, 175, 55, 0.1)';
-                e.target.style.borderColor = 'var(--gold-primary)';
-                e.target.style.color = 'var(--gold-primary)';
-                document.getElementById('btn-monthly').style.background = 'var(--bg-card)';
-                document.getElementById('btn-monthly').style.borderColor = 'var(--border)';
-                document.getElementById('btn-monthly').style.color = 'var(--text-secondary)';
-
-                if (analyticsChartInstance) {
-                    analyticsChartInstance.data = getChartData('yearly');
-                    analyticsChartInstance.update();
-                }
-            });
-
             // Render Initial Clients
             renderClientsTable();
         });
 
         // --- AI PRESET LOGIC ---
+        let currentFilterString = 'none';
+
         function applyPreset(type) {
             const img = document.getElementById('editor-img');
-            document.querySelectorAll('#view-ai-edit .ai-btn').forEach(b => {
+
+            // Only toggle styling for the preset buttons, not the upload/download ones
+            const presetButtons = document.getElementById('editor-canvas-container').nextElementSibling.querySelectorAll('.ai-btn');
+            presetButtons.forEach(b => {
                 b.style.background = 'rgba(212, 175, 55, 0.1)';
                 b.style.color = 'var(--gold-primary)';
             });
-            event.target.style.background = 'var(--gold-primary)';
-            event.target.style.color = 'var(--bg-darker)';
+            event.currentTarget.style.background = 'var(--gold-primary)';
+            event.currentTarget.style.color = 'var(--bg-darker)';
 
             switch (type) {
-                case 'cinematic': img.style.filter = 'contrast(1.2) saturate(1.1) sepia(0.2) brightness(0.9)'; break;
-                case 'vintage': img.style.filter = 'sepia(0.4) contrast(0.9) hue-rotate(-10deg) saturate(0.8)'; break;
-                case 'bnw': img.style.filter = 'grayscale(1) contrast(1.4) brightness(0.9)'; break;
-                case 'none': default: img.style.filter = 'none'; break;
+                case 'cinematic': currentFilterString = 'contrast(1.2) saturate(1.1) sepia(0.2) brightness(0.9)'; break;
+                case 'vintage': currentFilterString = 'sepia(0.4) contrast(0.9) hue-rotate(-10deg) saturate(0.8)'; break;
+                case 'bnw': currentFilterString = 'grayscale(1) contrast(1.4) brightness(0.9)'; break;
+                case 'none': default: currentFilterString = 'none'; break;
             }
+            img.style.filter = currentFilterString;
+        }
+
+        function loadCustomAIImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('editor-img').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function downloadAIImage() {
+            const img = document.getElementById('editor-img');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Ensure cross-origin image loads if it's the external unsplash default
+            if (img.src.includes('unsplash')) {
+                img.crossOrigin = "Anonymous";
+            }
+
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+
+            ctx.filter = currentFilterString !== 'none' ? currentFilterString : 'none';
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const link = document.createElement('a');
+            link.download = 'livewedding-ai-edit.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
         }
 
         // --- MOCK UPLOAD LOGIC & VALIDATION ---
@@ -905,11 +856,13 @@
 
                             const clientId = document.getElementById('upload-client-select').value;
                             const eventName = document.getElementById('upload-event-name').value;
+                            const presetName = document.getElementById('upload-ai-preset').options[document.getElementById('upload-ai-preset').selectedIndex].text;
 
                             row.innerHTML = `
                                 <td><i class="fas fa-file-image" style="color:var(--gold-primary); margin-right: 10px;"></i>${file.name}</td>
                                 <td>${sizeMB} MB</td>
                                 <td>${new Date().toLocaleDateString()}</td>
+                                <td><span style="color: var(--gold-primary); font-size: 0.85rem;">${presetName.split(' (')[0]}</span></td>
                                 <td><span class="status completed">${clientId} - ${eventName}</span></td>
                                 <td>
                                     <button class="ai-btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="alert('Viewing file in isolated modal...')">View</button>
