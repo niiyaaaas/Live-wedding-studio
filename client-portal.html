@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal | LiveWedding Studio</title>
+    <meta name="description" content="Secure access to your luxury wedding gallery.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Specific Styles for Client Portal included here to avoid bloating main CSS further */
+        .portal-header {
+            height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #111, var(--bg-dark));
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .auth-container {
+            max-width: 500px;
+            margin: -50px auto 100px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .auth-box {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid var(--glass-border);
+            padding: 50px 40px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-icon {
+            font-size: 3rem;
+            color: var(--gold-primary);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 0;
+            color: white;
+            font-family: var(--font-sans);
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-bottom-color: var(--gold-primary);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .auth-links {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-links a {
+            color: var(--gold-primary);
+            margin-left: 5px;
+        }
+
+        /* Dashboard Mockup (Hidden by default) */
+        #dashboard-view {
+            display: none;
+            padding: 120px 20px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .client-info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .client-info p {
+            color: var(--text-secondary);
+        }
+
+        .gallery-event-card {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            display: flex;
+            transition: var(--transition-smooth);
+        }
+
+        .gallery-event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .event-img {
+            width: 300px;
+            min-height: 200px;
+            object-fit: cover;
+        }
+
+        .event-details {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .event-details h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--gold-primary);
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* AI Feature Highlight */
+        .ai-banner {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 0, 0, 0.8));
+            border: 1px solid var(--gold-primary);
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 50px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .ai-icon {
+            font-size: 3rem;
+            color: var(--gold-primary);
+        }
+
+        .ai-text h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--gold-primary);
+        }
+
+        .ai-text p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-event-card {
+                flex-direction: column;
+            }
+
+            .event-img {
+                width: 100%;
+                height: 250px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .ai-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar glass-panel">
+        <div class="nav-container">
+            <a href="index.html" class="logo">LiveWedding <span class="text-gold">Studio</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="client-portal.html" class="active">Client Portal</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+            <a href="booking.html" class="btn btn-primary">Book Consultation</a>
+            <div class="mobile-menu-btn"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- Login View (Default) -->
+    <div id="login-view">
+        <header class="portal-header">
+            <div class="fade-in-section">
+                <h1 class="page-title">Client <span class="text-gold">Portal</span></h1>
+                <p class="page-subtitle">Access your timeless memories securely.</p>
+            </div>
+        </header>
+
+        <section class="auth-container fade-in-section">
+            <div class="auth-box">
+                <i class="fas fa-lock auth-icon"></i>
+                <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px;">Secure Login</h2>
+
+                <form id="portal-login-form">
+                    <div class="form-group">
+                        <label for="clientId">Client ID / Email</label>
+                        <input type="text" id="clientId" class="form-control" value="aiswarya_rahul" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Gallery Password / PIN</label>
+                        <input type="password" id="password" class="form-control" value="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full glow-effect">Access Gallery</button>
+
+                    <div class="auth-links">
+                        Lost your access pin? <a href="#">Contact Support</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- Dashboard View (Shown after login) -->
+    <div id="dashboard-view" class="fade-in-section">
+        <div class="dashboard-header">
+            <div class="client-info">
+                <h2>Welcome, <span class="text-gold" id="client-name-display">Aiswarya & Rahul</span></h2>
+                <p id="client-meta-display">Event Date: October 15, 2025 | Package: Premium Cinematic</p>
+            </div>
+            <button class="btn btn-outline" onclick="clientLogout()"><i class="fas fa-sign-out-alt"></i>
+                Logout</button>
+        </div>
+
+        <h3 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px;">Your Events</h3>
+
+        <!-- Event 1 -->
+        <div class="gallery-event-card">
+            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600"
+                alt="Wedding Day" class="event-img">
+            <div class="event-details">
+                <h3>The Wedding Day</h3>
+                <div class="event-meta">
+                    <span><i class="fas fa-image"></i> 850 Photos</span>
+                    <span><i class="fas fa-video"></i> 2 Cinematic Films</span>
+                </div>
+                <div class="event-actions">
+                    <button class="btn btn-primary"><i class="fas fa-eye"></i> View Gallery</button>
+                    <button class="btn btn-outline"><i class="fas fa-download"></i> Download All HD</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event 2 -->
+        <div class="gallery-event-card">
+            <img src="https://images.unsplash.com/photo-1543165365-d60232e01df7?auto=format&fit=crop&q=80&w=800"
+                alt="Haldi & Mehendi" class="event-img">
+            <div class="event-details">
+                <h3>Haldi & Mehendi</h3>
+                <div class="event-meta">
+                    <span><i class="fas fa-image"></i> 420 Photos</span>
+                    <span><i class="fas fa-video"></i> 1 Highlight Reel</span>
+                </div>
+                <div class="event-actions">
+                    <button class="btn btn-primary"><i class="fas fa-eye"></i> View Gallery</button>
+                    <button class="btn btn-outline"><i class="fas fa-download"></i> Download All HD</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Feature Prompt -->
+        <div class="ai-banner">
+            <i class="fas fa-brain ai-icon"></i>
+            <div class="ai-text">
+                <h4>AI Smart Search Activated</h4>
+                <p>Looking for photos of a specific person? Simply upload a selfie, and our AI will automatically find
+                    every photo they appear in across all your wedding albums.</p>
+                <button class="btn btn-primary" onclick="openAIFaceSearch()"><i class="fas fa-upload"></i> Try AI Face
+                    Search</button>
+            </div>
+        </div>
+
+        <!-- Hidden AI Search UI -->
+        <div id="ai-search-ui"
+            style="display: none; margin-top: 40px; padding: 30px; border: 1px solid var(--gold-primary); background: rgba(0,0,0,0.5); border-radius: 8px;">
+            <h3 style="color: var(--gold-primary); margin-bottom: 20px;">Upload Selfie to Search</h3>
+            <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                <input type="file" accept="image/*" class="form-control" style="max-width: 300px;"
+                    id="ai-selfie-upload">
+                <button class="btn btn-primary" onclick="simulateAISearch(this)">Start AI Scan</button>
+            </div>
+
+            <div id="ai-search-results" style="display: none; margin-top: 30px;">
+                <h4 style="margin-bottom: 15px;">AI Found 2 Matches:</h4>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=200"
+                        style="width: 150px; height: 150px; object-fit: cover; border-radius: 4px; border: 2px solid var(--gold-primary);">
+                    <img src="https://images.unsplash.com/photo-1543165365-d60232e01df7?auto=format&fit=crop&q=80&w=200"
+                        style="width: 150px; height: 150px; object-fit: cover; border-radius: 4px; border: 2px solid var(--gold-primary);">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer remains standard -->
+    <footer class="footer mt-40">
+        <div class="footer-bottom">
+            <p>&copy; 2024 LiveWedding Studio. Secure Client Portal.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        function openAIFaceSearch() {
+            document.getElementById('ai-search-ui').style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function simulateAISearch(btn) {
+            if (!document.getElementById('ai-selfie-upload').value) {
+                alert("Please select a selfie image first.");
+                return;
+            }
+            const originalText = btn.innerText;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning Faces...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Scan Complete';
+                document.getElementById('ai-search-results').style.display = 'block';
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>

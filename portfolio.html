@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | LiveWedding Studio</title>
+    <meta name="description" content="View our cinematic wedding portfolio, categorized by event type and location.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Navbar (same as other pages) -->
+    <nav class="navbar glass-panel">
+        <div class="nav-container">
+            <a href="index.html" class="logo">LiveWedding <span class="text-gold">Studio</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="portfolio.html" class="active">Portfolio</a></li>
+                <li><a href="client-portal.html">Client Portal</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+            <a href="booking.html" class="btn btn-primary">Book Consultation</a>
+            <div class="mobile-menu-btn"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header"
+        style="background: url('https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&q=80&w=1600') center/cover;">
+        <div class="header-overlay"></div>
+        <div class="header-content fade-in-section">
+            <h1 class="page-title">Our <span class="text-gold">Masterpieces</span></h1>
+            <p class="page-subtitle">A curated collection of love, light, and emotion.</p>
+        </div>
+    </header>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio pad-section">
+        <div class="portfolio-container fade-in-section">
+
+            <!-- Filters -->
+            <div class="filters-container">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">All Stories</button>
+                    <button class="filter-btn" data-filter="wedding">Weddings</button>
+                    <button class="filter-btn" data-filter="pre-wedding">Pre-Wedding</button>
+                    <button class="filter-btn" data-filter="cinematic">Cinematic Films</button>
+                    <button class="filter-btn" data-filter="destination">Destination</button>
+                </div>
+            </div>
+
+            <!-- Masonry Grid -->
+            <div class="masonry-grid" id="portfolio-grid">
+                <!-- Items -->
+                <div class="masonry-item wedding destination" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1543165365-d60232e01df7?auto=format&fit=crop&q=80&w=800"
+                        alt="Destination Wedding in Kerala">
+                    <div class="item-overlay">
+                        <h3>Sneha & Rahul</h3>
+                        <p>Backwater Destination Wedding</p>
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="masonry-item pre-wedding" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1606216794074-735e91ce2c92?auto=format&fit=crop&q=80&w=600"
+                        alt="Pre-Wedding Shoot">
+                    <div class="item-overlay">
+                        <h3>Anjali & Vivek</h3>
+                        <p>Munnar Pre-Wedding</p>
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="masonry-item cinematic" onclick="openLightbox(this)">
+                    <div class="video-thumbnail">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
+                            alt="Cinematic Film">
+                        <i class="fas fa-play-circle play-icon"></i>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>The Royal Knot</h3>
+                        <p>Cinematic Highlights</p>
+                    </div>
+                </div>
+                <div class="masonry-item wedding" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600"
+                        alt="Traditional Wedding">
+                    <div class="item-overlay">
+                        <h3>Kavya & Arjun</h3>
+                        <p>Traditional Kerala Wedding</p>
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="masonry-item destination" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=800"
+                        alt="Beach Wedding">
+                    <div class="item-overlay">
+                        <h3>Priya & Rohan</h3>
+                        <p>Goa Beach Wedding</p>
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="masonry-item pre-wedding" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600"
+                        alt="Engagement">
+                    <div class="item-overlay">
+                        <h3>Maya & Karthik</h3>
+                        <p>Vintage Engagement</p>
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-40">
+                <button class="btn btn-outline" id="load-more">Load More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Fullscreen Preview">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+            <button class="lightbox-prev" onclick="changeImage(-1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="lightbox-next" onclick="changeImage(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">LiveWedding <span class="text-gold">Studio</span></a>
+                <p class="footer-desc">Creating timeless emotional memories through cinematic storytelling.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="booking.html">Packages & Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> hello@liveweddingstudio.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 LiveWedding Studio. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/919876543210" class="floating-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <script src="script.js"></script>
+</body>
+
+</html>

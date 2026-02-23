@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal | LiveWedding Studio</title>
+    <meta name="description"
+        content="Wedding tips, real stories, and inspiration from Kerala's top wedding photography studio.">
+
+    <!-- Schema Markup for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "LiveWedding Studio Journal",
+      "description": "Wedding photography tips, real Kerala wedding stories, and cinematic inspiration.",
+      "url": "https://liveweddingstudio.com/blog"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .blog-card {
+            background: rgba(20, 20, 20, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold-primary);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .blog-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/10;
+        }
+
+        .blog-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .blog-card:hover .blog-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .blog-category {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--gold-primary);
+            color: var(--bg-darker);
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+
+        .blog-content {
+            padding: 30px;
+        }
+
+        .blog-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .blog-meta i {
+            color: var(--gold-primary);
+            margin-right: 5px;
+        }
+
+        .blog-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            transition: color 0.3s;
+        }
+
+        .blog-card:hover .blog-title {
+            color: var(--gold-primary);
+        }
+
+        .blog-excerpt {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .read-more {
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s;
+        }
+
+        .read-more i {
+            transition: transform 0.3s;
+        }
+
+        .blog-card:hover .read-more {
+            color: var(--gold-primary);
+        }
+
+        .blog-card:hover .read-more i {
+            transform: translateX(5px);
+        }
+
+        /* Featured Post */
+        .featured-post {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 0;
+            background: rgba(20, 20, 20, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            max-width: 1400px;
+            margin: -50px auto 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-content {
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .featured-content .blog-title {
+            font-size: 2.5rem;
+        }
+
+        @media (max-width: 992px) {
+            .blog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .featured-post {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-content {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar glass-panel">
+        <div class="nav-container">
+            <a href="index.html" class="logo">LiveWedding <span class="text-gold">Studio</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="client-portal.html">Client Portal</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+            </ul>
+            <a href="booking.html" class="btn btn-primary">Book Consultation</a>
+            <div class="mobile-menu-btn"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header"
+        style="background: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=1600') center/cover;">
+        <div class="header-overlay"></div>
+        <div class="header-content fade-in-section">
+            <h1 class="page-title">The <span class="text-gold">Journal</span></h1>
+            <p class="page-subtitle">Stories, Inspiration & Expert Advice.</p>
+        </div>
+    </header>
+
+    <main class="pad-section" style="padding-top: 0;">
+
+        <!-- Featured Post -->
+        <article class="featured-post fade-in-section">
+            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&q=80&w=1000"
+                alt="Kerala Destinaton Wedding" class="featured-img">
+            <div class="featured-content">
+                <span class="blog-category"
+                    style="position: static; display: inline-block; width: fit-content; margin-bottom: 20px;">Real
+                    Stories</span>
+                <div class="blog-meta">
+                    <span><i class="far fa-calendar"></i> Oct 12, 2024</span>
+                    <span><i class="far fa-clock"></i> 5 Min Read</span>
+                </div>
+                <h2 class="blog-title">The Ultimate Guide to Planning a Destination Wedding in Kerala Backwaters</h2>
+                <p class="blog-excerpt">Discover hidden gems, exclusive resorts, and what to expect when you bring your
+                    dream wedding to the serene backwaters of Alleppey and Kumarakom. Our expert cinematic crew breaks
+                    down everything you need to know for perfect lighting and logistics.</p>
+                <a href="#" class="btn btn-outline glow-effect" style="width: fit-content; margin-top: 10px;">Read
+                    Article</a>
+            </div>
+        </article>
+
+        <!-- Categories Filter -->
+        <div class="filters-container fade-in-section" style="margin-bottom: 60px;">
+            <button class="filter-btn active">All Topics</button>
+            <button class="filter-btn">Real Weddings</button>
+            <button class="filter-btn">Wedding Tips</button>
+            <button class="filter-btn">Cinematography</button>
+        </div>
+
+        <!-- Blog Grid -->
+        <div class="blog-grid fade-in-section">
+            <article class="blog-card">
+                <div class="blog-img-wrapper">
+                    <span class="blog-category">Tips</span>
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600"
+                        alt="Wedding Tips">
+                </div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span><i class="far fa-calendar"></i> Sep 28, 2024</span>
+                    </div>
+                    <h3 class="blog-title">5 Things Your Cinematic Photographer Wants You to Know</h3>
+                    <p class="blog-excerpt">From natural lighting tips to scheduling buffer times, our lead
+                        cinematographer Arjun shares insider secrets to getting the perfect wedding film.</p>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-img-wrapper">
+                    <span class="blog-category">Trends</span>
+                    <img src="https://images.unsplash.com/photo-1543165365-d60232e01df7?auto=format&fit=crop&q=80&w=600"
+                        alt="Wedding Trends">
+                </div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span><i class="far fa-calendar"></i> Sep 15, 2024</span>
+                    </div>
+                    <h3 class="blog-title">Why Drones are Essential for Grand Indian Weddings</h3>
+                    <p class="blog-excerpt">Explore how aerial cinematography adds an unmatched Hollywood feel to your
+                        wedding narrative, changing perspectives entirely.</p>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <div class="blog-img-wrapper">
+                    <span class="blog-category">Real Stories</span>
+                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=600"
+                        alt="Real Wedding">
+                </div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span><i class="far fa-calendar"></i> Aug 20, 2024</span>
+                    </div>
+                    <h3 class="blog-title">A Royal Heritage Wedding at Bolgatty Palace, Kochi</h3>
+                    <p class="blog-excerpt">Step inside Meera and Rohan's breathtaking three-day wedding celebration
+                        steeped in royal heritage and modern elegance.</p>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+        </div>
+
+        <div class="text-center mt-40 fade-in-section">
+            <button class="btn btn-outline">Load More Articles</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">LiveWedding <span class="text-gold">Studio</span></a>
+                <p class="footer-desc">Creating timeless emotional memories through cinematic storytelling.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 LiveWedding Studio. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
