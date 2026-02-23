@@ -209,16 +209,61 @@
                 height: 250px;
             }
 
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-
             .ai-banner {
                 flex-direction: column;
                 text-align: center;
             }
+        }
+
+        /* Query Section Styles */
+        .query-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .query-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold-primary);
+        }
+
+        .status-resolved {
+            background: rgba(37, 211, 102, 0.2);
+            color: #25D366;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #111;
+            border: 1px solid var(--gold-primary);
+            margin: 10% auto;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -351,6 +396,52 @@
                 </div>
             </div>
         </div>
+        <!-- Queries & Requests Section -->
+        <div style="margin-top: 60px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h3 style="font-family: var(--font-serif); font-size: 2rem; margin: 0;">Support & Requests</h3>
+                <button class="btn btn-primary" onclick="openQueryModal()"><i class="fas fa-plus"></i> New
+                    Request</button>
+            </div>
+
+            <div id="query-history-list">
+                <!-- Populated dynamically -->
+                <p
+                    style="color: var(--text-secondary); text-align: center; padding: 40px; border: 1px dashed var(--glass-border); border-radius: 8px;">
+                    No active requests. Need help with retouching or prints? Start a new request.</p>
+            </div>
+        </div>
+
+        <!-- New Query Modal -->
+        <div id="query-modal" class="modal">
+            <div class="modal-content">
+                <h3
+                    style="color: var(--gold-primary); margin-bottom: 25px; font-family: var(--font-serif); font-size: 1.8rem;">
+                    Submit New Request</h3>
+                <form id="new-query-form">
+                    <div class="form-group">
+                        <label>Subject / Topic</label>
+                        <select id="query-subject" class="form-control" required style="background: #111;">
+                            <option value="Retouching Request">Retouching Request</option>
+                            <option value="Print Order">Print Order</option>
+                            <option value="Download Issues">Download Issues</option>
+                            <option value="Other / Question">Other / Question</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Detailed Message</label>
+                        <textarea id="query-message" class="form-control" rows="4"
+                            placeholder="Describe your request in detail..." required
+                            style="background: transparent; border: 1px solid rgba(255,255,255,0.1); padding: 10px;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Query</button>
+                        <button type="button" class="btn btn-outline" style="flex: 1;"
+                            onclick="closeQueryModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Footer remains standard -->
@@ -361,6 +452,7 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="supabase-client.js"></script>
     <script src="auth.js"></script>
     <script>
         function openAIFaceSearch() {
@@ -381,6 +473,45 @@
                 btn.innerHTML = '<i class="fas fa-check"></i> Scan Complete';
                 document.getElementById('ai-search-results').style.display = 'block';
             }, 2000);
+        }
+
+        // --- QUERY SYSTEM LOGIC ---
+        function openQueryModal() {
+            document.getElementById('query-modal').style.display = 'block';
+        }
+
+        function closeQueryModal() {
+            document.getElementById('query-modal').style.display = 'none';
+        }
+
+        // Handle Form Submission
+        const queryForm = document.getElementById('new-query-form');
+        if (queryForm) {
+            queryForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const subject = document.getElementById('query-subject').value;
+                const message = document.getElementById('query-message').value;
+
+                const user = JSON.parse(localStorage.getItem('active_client'));
+                if (!user) return;
+
+                const success = await cloudSubmitQuery(user.id, user.name, subject, message);
+                if (success) {
+                    alert("Your request has been submitted to the studio manager. We'll get back to you soon!");
+                    closeQueryModal();
+                    queryForm.reset();
+                    // Reload queries
+                    loadClientQueries(user.id);
+                }
+            });
+        }
+
+        // Logic to close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('query-modal');
+            if (event.target == modal) {
+                closeQueryModal();
+            }
         }
     </script>
 </body>

@@ -116,9 +116,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Helper for Client Dashboard Loading
-function populateClientDashboard(user) {
+async function populateClientDashboard(user) {
     document.getElementById('client-name-display').innerText = user.name;
     document.getElementById('client-meta-display').innerText = `Event Date: ${user.date} | Package: ${user.package}`;
+
+    // Load Queries if we are on client portal
+    if (window.location.pathname.includes('client-portal.html')) {
+        loadClientQueries(user.id);
+    }
+}
+
+async function loadClientQueries(clientId) {
+    const queryList = document.getElementById('query-history-list');
+    if (!queryList) return;
+
+    const queries = await cloudGetClientQueries(clientId);
+
+    if (queries.length > 0) {
+        queryList.innerHTML = queries.map(q => `
+            <div class="query-card">
+                <div>
+                    <h4 style="margin-bottom: 5px;">${q.subject}</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">${q.message}</p>
+                    <small style="color: rgba(255,255,255,0.3);">${new Date(q.created_at).toLocaleDateString()}</small>
+                </div>
+                <span class="query-status status-${q.status}">${q.status}</span>
+            </div>
+        `).join('');
+    }
 }
 
 function clientLogout() {

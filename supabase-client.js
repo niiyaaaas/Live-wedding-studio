@@ -64,3 +64,67 @@ async function cloudUpdateBookingStatus(id, newStatus) {
     }
     return true;
 }
+
+// --- CLOUD QUERY FUNCTIONS ---
+
+// Submit a new support query from Client Portal
+async function cloudSubmitQuery(clientId, clientName, subject, message) {
+    const { data, error } = await supabase
+        .from('queries')
+        .insert([{
+            client_id: clientId,
+            client_name: clientName,
+            subject: subject,
+            message: message,
+            status: 'pending'
+        }]);
+
+    if (error) {
+        console.error("Supabase Query Error:", error);
+        return false;
+    }
+    return true;
+}
+
+// Fetch all queries for Admin CRM
+async function cloudGetQueries() {
+    const { data, error } = await supabase
+        .from('queries')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Supabase Query Fetch Error:", error);
+        return [];
+    }
+    return data;
+}
+
+// Fetch queries for a specific client
+async function cloudGetClientQueries(clientId) {
+    const { data, error } = await supabase
+        .from('queries')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Supabase Client Query Fetch Error:", error);
+        return [];
+    }
+    return data;
+}
+
+// Update query status from Admin CRM
+async function cloudUpdateQueryStatus(id, newStatus) {
+    const { data, error } = await supabase
+        .from('queries')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+    if (error) {
+        console.error("Supabase Query Update Error:", error);
+        return false;
+    }
+    return true;
+}
