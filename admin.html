@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Supabase CDN Client -->
@@ -249,13 +250,113 @@
             background: rgba(212, 175, 55, 0.1);
             color: var(--gold-primary);
         }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            cursor: pointer;
+            margin-right: 15px;
+            z-index: 1001;
+            padding: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: all 0.3s;
+                height: 100vh;
+                box-shadow: 10px 0 50px rgba(0, 0, 0, 0.8);
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            #close-sidebar {
+                display: block !important;
+            }
+
+            .header {
+                padding-bottom: 20px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .header-title {
+                font-size: 1.4rem;
+                flex: 1;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ai-actions {
+                flex-direction: column;
+            }
+
+            .ai-panel {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                padding: 15px;
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .user-profile {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="sidebar">
-        <div class="logo">LiveWedding <span>Admin</span></div>
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 30px;">
+            <div class="logo" style="margin-bottom: 0; text-align: left;">LiveWedding <span>Admin</span></div>
+            <div id="close-sidebar"
+                style="display: none; color: var(--gold-primary); cursor: pointer; font-size: 1.2rem;">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
         <a href="#" class="nav-link active" data-target="dashboard"><i class="fas fa-home"></i> Dashboard</a>
         <a href="#" class="nav-link" data-target="bookings"><i class="fas fa-calendar-check"></i> Bookings</a>
         <a href="#" class="nav-link" data-target="gallery"><i class="fas fa-images"></i> Gallery Manager</a>
@@ -271,6 +372,9 @@
 
     <div class="main-content">
         <header class="header">
+            <div class="mobile-toggle" id="admin-mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
             <h1 class="header-title">Welcome back, Arjun</h1>
             <div class="user-profile">
                 <span>Super Admin</span>
@@ -715,6 +819,21 @@
             const navLinks = document.querySelectorAll('.nav-link[data-target]');
             const views = document.querySelectorAll('.spa-view');
             const headerTitle = document.querySelector('.header-title');
+            const sidebar = document.querySelector('.sidebar');
+            const mobileToggle = document.getElementById('admin-mobile-toggle');
+
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            const closeSidebar = document.getElementById('close-sidebar');
+            if (closeSidebar) {
+                closeSidebar.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                });
+            }
 
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -728,6 +847,11 @@
                     link.classList.add('active');
                     const targetId = link.getAttribute('data-target');
                     document.getElementById(`view-${targetId}`).style.display = 'block';
+
+                    // Close sidebar on mobile after click
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.remove('active');
+                    }
 
                     // Update header title based on view
                     const viewTitles = {
@@ -776,6 +900,9 @@
 
             // Render Initial Clients
             renderClientsTable();
+
+            // Load Initial Queries for badge count
+            loadAdminQueries().catch(console.error);
         });
 
         // --- AI PRESET LOGIC ---

@@ -4,12 +4,18 @@ const supabaseUrl = 'https://lfufrozvaazzspnhyifu.supabase.co';
 const supabaseKey = 'sb_publishable_sEYRInbrGlAywbBui49zQw_I4x5NSVG';
 
 // Initialize the Supabase Client (requires @supabase/supabase-js CDN)
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+let supabase;
+if (window.supabase) {
+    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+} else {
+    console.error("CRITICAL: Supabase CDN failed to load. Please check your internet connection or the script URL.");
+}
 
 // --- CLOUD BOOKING FUNCTIONS ---
 
 // Submit a new booking inquiry to Supabase
 async function cloudSubmitBooking(name, email, date, pkgName) {
+    if (!supabase) return false;
     const { data, error } = await supabase
         .from('bookings')
         .insert([{ name: name, email: email, date: date, package: pkgName, status: 'pending' }]);
@@ -24,6 +30,7 @@ async function cloudSubmitBooking(name, email, date, pkgName) {
 
 // Check if a specific date is already marked as 'confirmed'
 async function cloudCheckDateBooked(dateStr) {
+    if (!supabase) return false;
     const { data, error } = await supabase
         .from('bookings')
         .select('id')
@@ -39,6 +46,7 @@ async function cloudCheckDateBooked(dateStr) {
 
 // Fetch all bookings for the Admin CRM
 async function cloudGetBookings() {
+    if (!supabase) return [];
     const { data, error } = await supabase
         .from('bookings')
         .select('*')
@@ -53,6 +61,7 @@ async function cloudGetBookings() {
 
 // Update booking status from Admin CRM
 async function cloudUpdateBookingStatus(id, newStatus) {
+    if (!supabase) return false;
     const { data, error } = await supabase
         .from('bookings')
         .update({ status: newStatus })
@@ -69,6 +78,7 @@ async function cloudUpdateBookingStatus(id, newStatus) {
 
 // Submit a new support query from Client Portal
 async function cloudSubmitQuery(clientId, clientName, subject, message) {
+    if (!supabase) return false;
     const { data, error } = await supabase
         .from('queries')
         .insert([{
@@ -88,6 +98,7 @@ async function cloudSubmitQuery(clientId, clientName, subject, message) {
 
 // Fetch all queries for Admin CRM
 async function cloudGetQueries() {
+    if (!supabase) return [];
     const { data, error } = await supabase
         .from('queries')
         .select('*')
@@ -102,6 +113,7 @@ async function cloudGetQueries() {
 
 // Fetch queries for a specific client
 async function cloudGetClientQueries(clientId) {
+    if (!supabase) return [];
     const { data, error } = await supabase
         .from('queries')
         .select('*')
@@ -117,6 +129,7 @@ async function cloudGetClientQueries(clientId) {
 
 // Update query status from Admin CRM
 async function cloudUpdateQueryStatus(id, newStatus) {
+    if (!supabase) return false;
     const { data, error } = await supabase
         .from('queries')
         .update({ status: newStatus })
